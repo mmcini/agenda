@@ -37,7 +37,7 @@ writeCsv(){
 }
 
 printAgenda(){
-        local line="___________________________________________"
+        local line="_____________________________________________________________________"
         local agendaEntries=("$@")
         local length="${#agendaEntries[@]}"
         local entry=()
@@ -46,8 +46,10 @@ printAgenda(){
                 local timeLeft=(${entry[0]})
                 local appointment="${entry[1]}"
                 local index=$(($i+1))
-                printf "[$index] %s days %s hours and %s minutes left %20s\n"\
-                "${timeLeft[0]}" "${timeLeft[1]}" "${timeLeft[2]}" "$appointment"
+                local padding=$(printf "[$index] %s days %s hours and %s minutes left"\
+                "${timeLeft[0]}" "${timeLeft[1]}" "${timeLeft[2]}")
+                printf "[$index] %s days %s hours and %s minutes left %s %s\n"\
+                "${timeLeft[0]}" "${timeLeft[1]}" "${timeLeft[2]}" "${line:${#padding}}" "$appointment"
         done
 }
 
