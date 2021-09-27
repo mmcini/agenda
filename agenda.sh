@@ -58,7 +58,7 @@ updateAgenda(){
         : > "$agendaPath/agenda.txt"
         for ((j=0; j<"$length"; j++)); do
                 readarray -d ',' -t currentEntry <<< "${agendaEntries[$j]}"
-                local newDate=$(./dcount.sh "${currentEntry[2]}")
+                local newDate=$("$dirPath/dcount.sh" "${currentEntry[2]}")
                 local updatedEntry=("$newDate" "${currentEntry[1]}" "${currentEntry[2]}")
                 writeCsv "${updatedEntry[@]}"
         done
@@ -114,6 +114,7 @@ sortAgenda(){
 #################################################################
 
 agendaPath="$HOME"
+dirPath=$(dirname $(realpath "$0"))
 
 # creates file to store agenda
 # if it does not exist
@@ -148,7 +149,7 @@ while getopts ":a:d:u:h" option; do
                 dOption=true
                 if ! $aOption; then break; fi
                 userInput["date"]="$OPTARG"
-                userInput["timeLeft"]=$(./dcount.sh "${userInput["date"]}")
+                userInput["timeLeft"]=$("$dirPath/dcount.sh" "${userInput["date"]}")
 
                 # tests if dcount received valid date
                 if [[ $? -ne 0 ]]; then
