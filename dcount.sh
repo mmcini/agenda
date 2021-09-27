@@ -62,4 +62,16 @@ daysLeft="$(( ($minutesDiff/60)/24 ))"
 hoursLeft="$(( ($minutesDiff/60)%24 ))"
 minutesLeft="$(( ($minutesDiff%60) - 1 ))"
 
-printf "$daysLeft $hoursLeft $minutesLeft"
+# tests if results are negative
+isDaysLeftNegative=$(if (($daysLeft < 0)); then printf 0; else printf 1; fi)
+isHoursLeftNegative=$(if (($hoursLeft < 0)); then printf 0; else printf 1; fi)
+isMinutesLeftNegative=$(if (($minutesLeft < 0)); then printf 0; else printf 1; fi)
+
+if [[ $isDaysLeftNegative -eq 0 || \
+        $isHoursLeftNegative -eq 0  || \
+        $isMinutesLeftNegative -eq 0  ]]; then
+        printf "negative numbers\n"
+        exit 1
+fi
+
+printf "%s %s %s" "$daysLeft" "$hoursLeft" "$minutesLeft"
