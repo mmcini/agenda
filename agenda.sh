@@ -3,7 +3,7 @@
 # dcount.sh must be in this same folder!
 
 #################################################################
-### Help                                                      ###
+### Functions                                                 ###
 #################################################################
 
 help(){
@@ -48,12 +48,15 @@ printAgenda(){
                 local index=$(($i+1))
                 local padding=$(printf "[$index] %s days %s hours and %s minutes left"\
                 "${timeLeft[0]}" "${timeLeft[1]}" "${timeLeft[2]}")
+                
                 printf "[$index] %s days %s hours and %s minutes left %s %s\n"\
                 "${timeLeft[0]}" "${timeLeft[1]}" "${timeLeft[2]}" "${line:${#padding}}" "$appointment"
         done
 }
 
 updateAgenda(){
+        # runs dcount on each entry
+        # to update countdowns
         local agendaEntries=("$@")
         local currentEntry=()
         local length="${#agendaEntries[@]}"
@@ -75,6 +78,9 @@ convertToMinutes(){
 }
 
 sortAgenda(){
+        # sorts entries based on the
+        # total minutes left to target
+        # date
         local agendaEntries=("$@")
         local sortedEntries=()
         local length=${#agendaEntries[@]} 
@@ -101,13 +107,6 @@ sortAgenda(){
                 previousIndex=$index
         done
 
-        # updates file with sorted values
-       # local count2=1
-       # : > "$agendaPath/agenda.txt"
-       # for i in "${sortedEntries[@]}"; do
-       #         printf "%s" "$i" >> "$agendaPath/agenda.txt"
-       #         ((count2++))
-       # done
         printf "%s" "${sortedEntries[@]}"
 }
 
@@ -115,8 +114,8 @@ sortAgenda(){
 ### Main Program                                              ###
 #################################################################
 
-agendaPath="$HOME"
-dirPath=$(dirname $(realpath "$0"))
+agendaPath="$HOME" # agenda.txt will be saved here
+dirPath=$(dirname $(realpath "$0")) # dcount.sh must be here
 
 # creates file to store agenda
 # if it does not exist
@@ -143,54 +142,55 @@ while getopts ":a:d:u:h" option; do
         case "$option" in
 
                 a) # adds appointment name
-                aOption=true
-                userInput["appointment"]="$OPTARG"
+
+                        aOption=true
+                        userInput["appointment"]="$OPTARG"
                 ;;
 
-                d) # adds date and saves to agenda.txt
-                dOption=true
-                if ! $aOption; then break; fi
-                userInput["date"]="$OPTARG"
-                userInput["timeLeft"]=$("$dirPath/dcount.sh" "${userInput["date"]}")
+                d)      # adds date and saves to agenda.txt
+                        dOption=true
+                        if ! $aOption; then break; fi
+                        userInput["date"]="$OPTARG"
+                        userInput["timeLeft"]=$("$dirPath/dcount.sh" "${userInput["date"]}")
 
-                # tests if dcount received valid date
-                if [[ $? -ne 0 ]]; then
-                        echo "invalid date"
-                        exit 1
-                fi
+                        # tests if dcount received valid date
+                        if [[ $? -ne 0 ]]; then
+                                echo "invalid date"
+                                exit 1
+                        fi
                 
-                newEntry=("${userInput[timeLeft]}" \
-                        "${userInput[appointment]}" \
-                        "${userInput[date]}")
-                writeCsv "${newEntry[@]}"
-                printf "Entry added\n"
+                        newEntry=("${userInput[timeLeft]}" \
+                                "${userInput[appointment]}" \
+                                "${userInput[date]}")
+                        writeCsv "${newEntry[@]}"
+                        printf "Entry added\n"
                 ;;
 
-                u) # unsets entry
-                index=$(($OPTARG-1))
-                echo "$index"
-                unset agendaEntries[$index]
+                u)      # unsets entry
+                        index=$(($OPTARG-1))
+                        echo "$index"
+                        unset agendaEntries[$index]
                 
-                # tests if unset received a valid value
-                if [[ $? -ne 0 ]]; then
-                        echo "invalid index"
-                        exit 1
-                fi
+                        # tests if unset received a valid value
+                        if [[ $? -ne 0 ]]; then
+                                echo "invalid index"
+                                exit 1
+                        fi
 
-                printf "%s" "${agendaEntries[@]}" > "$agendaPath/agenda.txt"
-                echo "the index [$index] was unset"
-                exit 0
+                        printf "%s" "${agendaEntries[@]}" > "$agendaPath/agenda.txt"
+                        echo "the index [$index] was unset"
+                        exit 0
                 ;;
 
-                h) # shows help
-                help
-                exit 0
+                h)      # shows help
+                        help
+                        exit 0
                 ;;
 
                 \?)
-                echo "invalid options"
-                echo "see options with -h"
-                exit 1
+                        echo "invalid options"
+                        echo "see options with -h"
+                        exit 1
                 ;;
         esac
 done
