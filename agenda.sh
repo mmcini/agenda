@@ -63,7 +63,15 @@ updateAgenda(){
         : > "$agendaPath/agenda.txt"
         for ((j=0; j<"$length"; j++)); do
                 readarray -d ',' -t currentEntry <<< "${agendaEntries[$j]}"
-                local newDate=$("$dirPath/dcount.sh" "${currentEntry[2]}")
+                local newDate=$("$dirPath/dcount.sh" "${currentEntry[2]}") status=$?
+
+                # checks if exit status is 1
+                # i.e. if countdown values is
+                # negative
+                if [[ $status -ne 0 ]]; then
+                        continue
+                fi
+
                 local updatedEntry=("$newDate" "${currentEntry[1]}" "${currentEntry[2]}")
                 writeCsv "${updatedEntry[@]}"
         done
@@ -155,7 +163,7 @@ while getopts ":a:d:u:h" option; do
 
                         # tests if dcount received valid date
                         if [[ $? -ne 0 ]]; then
-                                echo "invalid date"
+                                printf "invalid date\n"
                                 exit 1
                         fi
                 
