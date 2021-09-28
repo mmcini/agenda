@@ -47,11 +47,11 @@ diffInMinutes(){
         # - minutes past in current day
         # + minutes left in target day)
         dayDiff="$(( ${targetDayHour[0]} - ${currentDayHour[0]} ))"
-        minutesInCurrentDay="$(( ${currentDayHour[1]}*60+${currentDayHour[2]} ))"
-       # hashtag 10 forces base-10 interpretation
-       # otherwise it might interpret numbers
-       # like '09' wrong
- minutesInTargetDay="$(( 10#${targetDayHour[1]}*60+10#${targetDayHour[2]} ))"
+        minutesInCurrentDay="$(( 10#${currentDayHour[1]}*60+10#${currentDayHour[2]} ))"
+        # hashtag 10 forces base-10 interpretation
+        # otherwise it might interpret numbers
+        # like '09' wrong
+        minutesInTargetDay="$(( 10#${targetDayHour[1]}*60+10#${targetDayHour[2]} ))"
         diff="$(( ($dayDiff*24*60) - ($minutesInCurrentDay) + ($minutesInTargetDay) ))"
         echo "$diff"
 }
