@@ -100,19 +100,11 @@ sortAgenda(){
         for ((i=0; i<$length; i++)); do
                 readarray -d ',' -t entry <<< "${agendaEntries[$i]}"
                 local index=$(convertToMinutes ${entry[@]})
-
-                # changes the index if it is equal to
-                # that of another entry to prevent
-                # overwriting
-                if (($index==$previousIndex)); then
-                        local newIndex=$(($index + $count))
-                        sortedEntries[$newIndex]="${agendaEntries[$i]}"
-                        ((count+=10))
-                        continue
-                fi
-
+                # minimizes the chance of duplicate values
+                # causing indexes to be overwritten
+                index=$(($index + $count)) 
                 sortedEntries[$index]="${agendaEntries[$i]}"
-                previousIndex=$index
+                ((count++))
         done
 
         printf "%s" "${sortedEntries[@]}"
