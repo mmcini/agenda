@@ -138,9 +138,10 @@ fi
 aOption=false
 dOption=false
 declare -A userInput
-while getopts ":a:d:u:h" option; do
+while getopts ":a:d:bru:h" option; do
         case "$option" in
 
+        # add and delete =====================================================================
                 a) # adds appointment name
 
                         aOption=true
@@ -182,11 +183,22 @@ while getopts ":a:d:u:h" option; do
                         exit 0
                 ;;
 
+        # backup and restore =================================================================
+                b)
+                        cp "$agendaPath/agenda.txt" "$agendaPath/agenda.bkp"
+                ;;
+
+                r)
+                        cp "$agendaPath/agenda.bkp" "$agendaPath/agenda.txt"
+                ;;
+
+        # help ===============================================================================
                 h)      # shows help
                         help
                         exit 0
                 ;;
 
+        # invalid ============================================================================
                 \?)
                         echo "invalid options"
                         echo "see options with -h"
