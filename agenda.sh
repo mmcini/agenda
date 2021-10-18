@@ -11,13 +11,16 @@ help(){
         echo "shows time until appointment"
         echo ""
         echo "SYNTAX"
-        echo "agenda [-a|d|u]"
+        echo "agenda [-a|d|b|r|u|h]"
         echo ""
         echo "USAGE"
         echo "agenda [no args]          shows agenda"
         echo "a                         adds appointment"
         echo "d                         date to add to appointment"
+        echo "b                         creates a backup file at $HOME"
+        echo "r                         if backup file exists, loads it into current agenda"
         echo "u                         removes appointment by index"
+        echo "h                         show help"
 }
 
 writeCsv(){
@@ -189,7 +192,11 @@ while getopts ":a:d:bru:h" option; do
                 ;;
 
                 r)
+                    if [ -f  "$agendaPath/agenda.bkp" ]; then
                         cp "$agendaPath/agenda.bkp" "$agendaPath/agenda.txt"
+                    else
+                        printf "No backup file\n"
+                    fi
                 ;;
 
         # help ===============================================================================
